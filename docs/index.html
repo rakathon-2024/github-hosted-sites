@@ -1374,7 +1374,8 @@
         .toast {
             position: fixed;
             bottom: 2rem;
-            right: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(200%);
             background: linear-gradient(135deg, var(--success), var(--success-light));
             color: white;
             padding: 1rem 1.5rem;
@@ -1384,7 +1385,6 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            transform: translateY(150%);
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 1000;
             font-weight: 500;
@@ -1392,7 +1392,7 @@
         }
 
         .toast.show {
-            transform: translateY(0);
+            transform: translateX(-50%) translateY(0);
             animation: slideInBounce 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
@@ -1689,6 +1689,229 @@
                 left: 0.5rem;
             }
         }
+
+        /* Help Button */
+        .help-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(91, 33, 182, 0.4), 0 0 40px var(--glow-primary);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .help-button:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 8px 30px rgba(91, 33, 182, 0.6), 0 0 60px var(--glow-primary);
+        }
+
+        .help-button.active {
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            transform: rotate(45deg);
+        }
+
+        .help-button svg {
+            width: 24px;
+            height: 24px;
+            transition: transform 0.3s ease;
+        }
+
+        .help-button.active svg {
+            transform: rotate(-45deg);
+        }
+
+        /* Help Info Box */
+        .help-info-box {
+            position: fixed;
+            bottom: 5.5rem;
+            right: 2rem;
+            width: 400px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 999;
+        }
+
+        .help-info-box.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .help-info-box h3 {
+            color: var(--text);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .help-info-box p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+
+        .help-channels {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+            padding: 0.75rem;
+            background: var(--surface-light);
+            border-radius: 10px;
+        }
+
+        .help-channel {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: var(--surface);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .help-channel svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .help-channels-divider {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .help-section-title {
+            color: var(--text);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .help-section-title svg {
+            width: 16px;
+            height: 16px;
+            color: var(--primary);
+        }
+
+        .help-contact-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .help-contact-list li {
+            margin-bottom: 0.75rem;
+        }
+
+        .help-contact-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .help-contact-item {
+            display: block;
+            padding: 0.75rem;
+            background: var(--surface-light);
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .help-contact-item:hover {
+            background: var(--surface-lighter);
+            transform: translateX(4px);
+            box-shadow: 0 2px 8px rgba(91, 33, 182, 0.2);
+        }
+
+        .help-contact-item:active {
+            transform: translateX(2px);
+        }
+
+        .help-contact-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .help-contact-item::after {
+            content: '→';
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            opacity: 0;
+            transition: all 0.2s ease;
+        }
+
+        .help-contact-item:hover::after {
+            opacity: 1;
+            right: 0.75rem;
+        }
+
+        .help-contact-name {
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline;
+            margin-right: 0.5rem;
+        }
+
+        .help-contact-handle {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-family: 'Monaco', 'Courier New', monospace;
+            display: inline;
+        }
+
+        /* Responsive adjustments for help button */
+        @media (max-width: 768px) {
+            .help-button {
+                bottom: 1.5rem;
+                right: 1.5rem;
+                width: 50px;
+                height: 50px;
+                font-size: 1.25rem;
+            }
+
+            .help-info-box {
+                right: 1.5rem;
+                bottom: 5rem;
+                width: calc(100vw - 3rem);
+                max-width: 320px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1706,7 +1929,7 @@
                     </div>
                     <div class="header-controls">
                         <div class="slide-counter">
-                            Card <span id="current-slide">1</span> / <span id="total-slides">21</span>
+                            Slide <span id="current-slide">1</span> / <span id="total-slides">21</span>
                         </div>
                         <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">
                             <svg id="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -2747,10 +2970,104 @@ I'd like them to have a simple dashboard to view available deliveries and update
             if (e.key === 'ArrowLeft') previousSlide();
         });
 
+        // Help button functionality
+        function toggleHelpBox() {
+            const button = document.getElementById('help-button');
+            const box = document.getElementById('help-info-box');
+            button.classList.toggle('active');
+            box.classList.toggle('active');
+        }
+
+        // Close help box when clicking outside
+        document.addEventListener('click', (e) => {
+            const button = document.getElementById('help-button');
+            const box = document.getElementById('help-info-box');
+            if (!button.contains(e.target) && !box.contains(e.target)) {
+                button.classList.remove('active');
+                box.classList.remove('active');
+            }
+        });
+
         // Initialize
         loadTheme();
         loadSidebarState();
         initSlides();
     </script>
+
+    <!-- Help Button -->
+    <button class="help-button" id="help-button" onclick="toggleHelpBox()" aria-label="Help">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+    </button>
+
+    <!-- Help Info Box -->
+    <div class="help-info-box" id="help-info-box">
+        <h3>Need Technical Help?</h3>
+        <p>Reach out to us through:</p>
+
+        <div class="help-channels">
+            <div class="help-channel">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+                    <path d="M2 11.6C2 8.23969 2 6.55953 2.65396 5.27606C3.2292 4.14708 4.14708 3.2292 5.27606 2.65396C6.55953 2 8.23969 2 11.6 2H20.4C23.7603 2 25.4405 2 26.7239 2.65396C27.8529 3.2292 28.7708 4.14708 29.346 5.27606C30 6.55953 30 8.23969 30 11.6V20.4C30 23.7603 30 25.4405 29.346 26.7239C28.7708 27.8529 27.8529 28.7708 26.7239 29.346C25.4405 30 23.7603 30 20.4 30H11.6C8.23969 30 6.55953 30 5.27606 29.346C4.14708 28.7708 3.2292 27.8529 2.65396 26.7239C2 25.4405 2 23.7603 2 20.4V11.6Z" fill="#4087FC"/>
+                    <path d="M8.26667 10C7.56711 10 7 10.6396 7 11.4286V18.3571C7 20.369 8.44612 22 10.23 22L17.7333 21.9286C18.4329 21.9286 19 21.289 19 20.5V13.5C19 11.4881 17.2839 10 15.5 10L8.26667 10Z" fill="white"/>
+                    <path d="M20.7122 12.7276C20.2596 13.1752 20 13.8211 20 14.5V17.3993C20 18.0782 20.2596 18.7242 20.7122 19.1717L23.5288 21.6525C24.1019 22.2191 25 21.7601 25 20.9005V11.1352C25 10.2755 24.1019 9.81654 23.5288 10.3832L20.7122 12.7276Z" fill="white"/>
+                </svg>
+                <span>Zoom Q&A</span>
+            </div>
+            <span class="help-channels-divider">or</span>
+            <div class="help-channel">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="-2.45 0 2452.5 2452.5">
+                    <g clip-rule="evenodd" fill-rule="evenodd">
+                        <path d="m897.4 0c-135.3.1-244.8 109.9-244.7 245.2-.1 135.3 109.5 245.1 244.8 245.2h244.8v-245.1c.1-135.3-109.5-245.1-244.9-245.3.1 0 .1 0 0 0m0 654h-652.6c-135.3.1-244.9 109.9-244.8 245.2-.2 135.3 109.4 245.1 244.7 245.3h652.7c135.3-.1 244.9-109.9 244.8-245.2.1-135.4-109.5-245.2-244.8-245.3z" fill="#36c5f0"/>
+                        <path d="m2447.6 899.2c.1-135.3-109.5-245.1-244.8-245.2-135.3.1-244.9 109.9-244.8 245.2v245.3h244.8c135.3-.1 244.9-109.9 244.8-245.3zm-652.7 0v-654c.1-135.2-109.4-245-244.7-245.2-135.3.1-244.9 109.9-244.8 245.2v654c-.2 135.3 109.4 245.1 244.7 245.3 135.3-.1 244.9-109.9 244.8-245.3z" fill="#2eb67d"/>
+                        <path d="m1550.1 2452.5c135.3-.1 244.9-109.9 244.8-245.2.1-135.3-109.5-245.1-244.8-245.2h-244.8v245.2c-.1 135.2 109.5 245 244.8 245.2zm0-654.1h652.7c135.3-.1 244.9-109.9 244.8-245.2.2-135.3-109.4-245.1-244.7-245.3h-652.7c-135.3.1-244.9 109.9-244.8 245.2-.1 135.4 109.4 245.2 244.7 245.3z" fill="#ecb22e"/>
+                        <path d="m0 1553.2c-.1 135.3 109.5 245.1 244.8 245.2 135.3-.1 244.9-109.9 244.8-245.2v-245.2h-244.8c-135.3.1-244.9 109.9-244.8 245.2zm652.7 0v654c-.2 135.3 109.4 245.1 244.7 245.3 135.3-.1 244.9-109.9 244.8-245.2v-653.9c.2-135.3-109.4-245.1-244.7-245.3-135.4 0-244.9 109.8-244.8 245.1 0 0 0 .1 0 0" fill="#e01e5a"/>
+                    </g>
+                </svg>
+                <span>Slack DM</span>
+            </div>
+        </div>
+
+        <div class="help-section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="-2.45 0 2452.5 2452.5">
+                <g clip-rule="evenodd" fill-rule="evenodd">
+                    <path d="m897.4 0c-135.3.1-244.8 109.9-244.7 245.2-.1 135.3 109.5 245.1 244.8 245.2h244.8v-245.1c.1-135.3-109.5-245.1-244.9-245.3.1 0 .1 0 0 0m0 654h-652.6c-135.3.1-244.9 109.9-244.8 245.2-.2 135.3 109.4 245.1 244.7 245.3h652.7c135.3-.1 244.9-109.9 244.8-245.2.1-135.4-109.5-245.2-244.8-245.3z" fill="#36c5f0"/>
+                    <path d="m2447.6 899.2c.1-135.3-109.5-245.1-244.8-245.2-135.3.1-244.9 109.9-244.8 245.2v245.3h244.8c135.3-.1 244.9-109.9 244.8-245.3zm-652.7 0v-654c.1-135.2-109.4-245-244.7-245.2-135.3.1-244.9 109.9-244.8 245.2v654c-.2 135.3 109.4 245.1 244.7 245.3 135.3-.1 244.9-109.9 244.8-245.3z" fill="#2eb67d"/>
+                    <path d="m1550.1 2452.5c135.3-.1 244.9-109.9 244.8-245.2.1-135.3-109.5-245.1-244.8-245.2h-244.8v245.2c-.1 135.2 109.5 245 244.8 245.2zm0-654.1h652.7c135.3-.1 244.9-109.9 244.8-245.2.2-135.3-109.4-245.1-244.7-245.3h-652.7c-135.3.1-244.9 109.9-244.8 245.2-.1 135.4 109.4 245.2 244.7 245.3z" fill="#ecb22e"/>
+                    <path d="m0 1553.2c-.1 135.3 109.5 245.1 244.8 245.2 135.3-.1 244.9-109.9 244.8-245.2v-245.2h-244.8c-135.3.1-244.9 109.9-244.8 245.2zm652.7 0v654c-.2 135.3 109.4 245.1 244.7 245.3 135.3-.1 244.9-109.9 244.8-245.2v-653.9c.2-135.3-109.4-245.1-244.7-245.3-135.4 0-244.9 109.8-244.8 245.1 0 0 0 .1 0 0" fill="#e01e5a"/>
+                </g>
+            </svg>
+            Slack our Support Crew
+        </div>
+        <ul class="help-contact-list">
+            <li>
+                <a href="slack://user?team=E06JHRE2D55&id=U03ABN16SA3" class="help-contact-item" target="_blank">
+                    <span class="help-contact-name">Jino Jose</span>
+                    <span class="help-contact-handle">@jino.jose</span>
+                </a>
+            </li>
+            <li>
+                <a href="slack://user?team=E06JHRE2D55&id=U03H597J5ED" class="help-contact-item" target="_blank">
+                    <span class="help-contact-name">Jason Lei</span>
+                    <span class="help-contact-handle">@jianan.lei</span>
+                </a>
+            </li>
+            <li>
+                <a href="slack://user?team=E06JHRE2D55&id=U077X25BA6M" class="help-contact-item" target="_blank">
+                    <span class="help-contact-name">Walter Pak Wai Cheng</span>
+                    <span class="help-contact-handle">@walterpakwai.cheng</span>
+                </a>
+            </li>
+            <li>
+                <a href="slack://user?team=E06JHRE2D55&id=U043H4MJJ21" class="help-contact-item" target="_blank">
+                    <span class="help-contact-name">Ralph Manna</span>
+                    <span class="help-contact-handle">@ralph.a.manna</span>
+                </a>
+            </li>
+        </ul>
+    </div>
 </body>
 </html>
