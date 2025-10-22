@@ -208,6 +208,37 @@
             backdrop-filter: blur(10px);
         }
 
+        .countdown-timer {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.45rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .countdown-timer .timer-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .countdown-timer .timer-value {
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .countdown-timer.expired {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+
         .theme-toggle {
             background: rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.3);
@@ -262,6 +293,11 @@
         .step-dot.completed {
             background: linear-gradient(90deg, var(--success), var(--success-light));
             box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+        }
+
+        .step-dot.visited {
+            background: linear-gradient(90deg, #6b7280, #9ca3af);
+            box-shadow: 0 0 8px rgba(107, 114, 128, 0.3);
         }
 
         .step-dot:hover {
@@ -463,6 +499,20 @@
 
         .sidebar-item.completed:hover {
             opacity: 1;
+        }
+
+        .sidebar-item.visited .sidebar-item-icon.prompt,
+        .sidebar-item.visited .sidebar-item-icon.setup {
+            background: #6b7280;
+            color: white;
+        }
+
+        .sidebar-item.visited {
+            opacity: 0.6;
+        }
+
+        .sidebar-item.visited:hover {
+            opacity: 0.9;
         }
 
         .sidebar-toggle {
@@ -1929,7 +1979,10 @@
                     </div>
                     <div class="header-controls">
                         <div class="slide-counter">
-                            Slide <span id="current-slide">1</span> / <span id="total-slides">21</span>
+                            Slide <span id="current-slide">1</span> / <span id="total-slides">21</span> (<span id="completed-count">0%</span>)
+                        </div>
+                        <div class="header-stats">
+                            <div class="phase-badge" id="current-phase">Phase 1</div>
                         </div>
                         <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">
                             <svg id="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1940,9 +1993,9 @@
                             </svg>
                             <span id="theme-label">Dark</span>
                         </button>
-                        <div class="header-stats">
-                            <div class="phase-badge" id="current-phase">Phase 1</div>
-                            <div style="font-size: 0.8rem; margin-top: 0.25rem; opacity: 0.9; font-weight: 500;" id="completion-text">0 of 21 completed</div>
+                        <div class="countdown-timer" id="countdown-timer">
+                            <span class="timer-label">Time Remaining:</span>
+                            <span class="timer-value" id="timer-value">Loading...</span>
                         </div>
                     </div>
                 </div>
@@ -2614,7 +2667,7 @@ I'd like them to have a simple dashboard to view available deliveries and update
             const dots = document.querySelectorAll('.step-dot');
             const sidebarItems = document.querySelectorAll('.sidebar-item');
 
-            // Auto-mark non-prompt slides as visited when navigating away
+            // Auto-mark non-prompt slides as visited when navigating away (they don't have a complete button)
             const previousSlide = slides[currentSlideIndex];
             if (previousSlide && (previousSlide.type === 'welcome' || previousSlide.type === 'setup' || previousSlide.type === 'phase-intro' || previousSlide.type === 'celebration')) {
                 if (!visitedSlides.includes(currentSlideIndex)) {
@@ -2764,8 +2817,9 @@ I'd like them to have a simple dashboard to view available deliveries and update
         function updateProgress() {
             const totalPrompts = slides.filter(s => s.type === 'prompt').length;
             const completed = completedPrompts.length;
+            const percentage = totalPrompts > 0 ? Math.round((completed / totalPrompts) * 100) : 0;
 
-            document.getElementById('completion-text').textContent = `${completed} of ${totalPrompts} completed`;
+            document.getElementById('completed-count').textContent = percentage + '%';
 
             // Update step dots - mark both completed prompts and visited non-prompt slides
             const dots = document.querySelectorAll('.step-dot');
@@ -2774,13 +2828,17 @@ I'd like them to have a simple dashboard to view available deliveries and update
             slides.forEach((slide, index) => {
                 if (slide.type === 'prompt' && completedPrompts.includes(slide.id)) {
                     dots[index]?.classList.add('completed');
+                    dots[index]?.classList.remove('visited');
                     sidebarItems[index]?.classList.add('completed');
+                    sidebarItems[index]?.classList.remove('visited');
                 } else if ((slide.type === 'welcome' || slide.type === 'setup' || slide.type === 'phase-intro' || slide.type === 'celebration') && visitedSlides.includes(index)) {
-                    dots[index]?.classList.add('completed');
-                    sidebarItems[index]?.classList.add('completed');
-                } else {
+                    dots[index]?.classList.add('visited');
                     dots[index]?.classList.remove('completed');
+                    sidebarItems[index]?.classList.add('visited');
                     sidebarItems[index]?.classList.remove('completed');
+                } else {
+                    dots[index]?.classList.remove('completed', 'visited');
+                    sidebarItems[index]?.classList.remove('completed', 'visited');
                 }
             });
         }
@@ -2988,10 +3046,52 @@ I'd like them to have a simple dashboard to view available deliveries and update
             }
         });
 
+        // Countdown Timer
+        function updateCountdown() {
+            // Target: 4:00 PM PST on October 23rd, 2025
+            // PST is UTC-8, so 4:00 PM PST = midnight UTC on Oct 24th
+            const targetDate = new Date('2025-10-23T16:00:00-07:00'); // Using -07:00 for PDT (PST equivalent during daylight saving)
+            const now = new Date();
+            const difference = targetDate - now;
+
+            const timerElement = document.getElementById('countdown-timer');
+            const timerValue = document.getElementById('timer-value');
+
+            if (difference <= 0) {
+                timerValue.textContent = 'Event Started!';
+                timerElement.classList.add('expired');
+                return;
+            }
+
+            // Calculate time components
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+            // Format display
+            let displayText = '';
+            if (days > 0) {
+                displayText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+            } else if (hours > 0) {
+                displayText = `${hours}h ${minutes}m ${seconds}s`;
+            } else if (minutes > 0) {
+                displayText = `${minutes}m ${seconds}s`;
+            } else {
+                displayText = `${seconds}s`;
+            }
+
+            timerValue.textContent = displayText;
+        }
+
         // Initialize
         loadTheme();
         loadSidebarState();
         initSlides();
+
+        // Start countdown
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
     </script>
 
     <!-- Help Button -->
