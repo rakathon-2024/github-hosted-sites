@@ -75,6 +75,125 @@
             flex-direction: column;
         }
 
+        /* Hide content until logged in */
+        body.locked .workshop-container {
+            display: none;
+        }
+
+        /* Login Modal */
+        .login-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .login-modal.show {
+            display: flex;
+        }
+
+        .login-content {
+            background: linear-gradient(135deg, #4c1d95 0%, var(--primary) 30%, var(--secondary) 60%, var(--accent) 100%);
+            padding: 3rem 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            color: white;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5),
+                        0 0 40px var(--glow-primary);
+            animation: slideUp 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .login-content .lock-emoji {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+            animation: lockPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes lockPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .login-content h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .login-content p {
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.2rem;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: white;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .login-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: normal;
+        }
+
+        .login-error {
+            color: #ff6b6b;
+            font-size: 0.9rem;
+            margin-top: -1rem;
+            margin-bottom: 1rem;
+            display: none;
+            font-weight: 600;
+        }
+
+        .login-error.show {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 0.9rem;
+            border: 2px solid white;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .login-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
         /* Header */
         .header {
             background: linear-gradient(135deg, #4c1d95 0%, var(--primary) 30%, var(--secondary) 60%, var(--accent) 100%);
@@ -1945,6 +2064,33 @@
             display: inline;
         }
 
+        .online-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.6),
+                        0 0 3px rgba(16, 185, 129, 0.8);
+            animation: pulse-online 2s ease-in-out infinite;
+            position: relative;
+            top: -1px;
+        }
+
+        @keyframes pulse-online {
+            0%, 100% {
+                box-shadow: 0 0 8px rgba(16, 185, 129, 0.6),
+                           0 0 3px rgba(16, 185, 129, 0.8);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 12px rgba(16, 185, 129, 0.8),
+                           0 0 6px rgba(16, 185, 129, 1);
+                transform: scale(1.1);
+            }
+        }
+
         /* Responsive adjustments for help button */
         @media (max-width: 768px) {
             .help-button {
@@ -1964,7 +2110,24 @@
         }
     </style>
 </head>
-<body>
+<body class="locked">
+    <!-- Login Modal -->
+    <div class="login-modal show" id="login-modal">
+        <div class="login-content">
+            <span class="lock-emoji">🔒</span>
+            <h2>Workshop Access</h2>
+            <p>Enter the access code to view the workshop content</p>
+            <input type="password"
+                   id="login-input"
+                   class="login-input"
+                   placeholder="Enter code"
+                   maxlength="10"
+                   autocomplete="off">
+            <div class="login-error" id="login-error">❌ Incorrect code. Try again!</div>
+            <button class="login-btn" onclick="submitLogin()">Enter Workshop</button>
+        </div>
+    </div>
+
     <div class="workshop-container">
         <!-- Header -->
         <div class="header">
@@ -2428,11 +2591,13 @@ I'd like them to have a simple dashboard to view available deliveries and update
         ];
 
         const PHASE2_PASSCODE = 'CLAUDE2025'; // Change this to your desired passcode
+        const LOGIN_PASSCODE = 'VIBE2025'; // Login passcode for workshop access
         let currentSlideIndex = 0;
         let completedPrompts = JSON.parse(localStorage.getItem('completedPrompts') || '[]');
         let visitedSlides = JSON.parse(localStorage.getItem('visitedSlides') || '[]');
         let phase2Unlocked = localStorage.getItem('phase2Unlocked') === 'true';
         let pendingSlideIndex = null;
+        let isAuthenticated = sessionStorage.getItem('workshopAuthenticated') === 'true';
 
         function initSlides() {
             const wrapper = document.getElementById('slides-wrapper');
@@ -3006,6 +3171,50 @@ I'd like them to have a simple dashboard to view available deliveries and update
             hidePasscodeModal();
         }
 
+        // Login Functions
+        function submitLogin() {
+            const input = document.getElementById('login-input').value.trim();
+            const errorEl = document.getElementById('login-error');
+
+            if (input.toUpperCase() === LOGIN_PASSCODE) {
+                // Correct passcode
+                sessionStorage.setItem('workshopAuthenticated', 'true');
+                isAuthenticated = true;
+                
+                // Hide login modal and show content
+                document.getElementById('login-modal').classList.remove('show');
+                document.body.classList.remove('locked');
+                
+                // Focus on the first slide
+                setTimeout(() => {
+                    initSlides();
+                }, 300);
+            } else {
+                // Incorrect passcode
+                errorEl.classList.add('show');
+                document.getElementById('login-input').value = '';
+                document.getElementById('login-input').focus();
+                
+                setTimeout(() => {
+                    errorEl.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        // Check authentication on page load
+        function checkAuthentication() {
+            if (isAuthenticated) {
+                document.getElementById('login-modal').classList.remove('show');
+                document.body.classList.remove('locked');
+            } else {
+                document.getElementById('login-modal').classList.add('show');
+                document.body.classList.add('locked');
+                setTimeout(() => {
+                    document.getElementById('login-input').focus();
+                }, 300);
+            }
+        }
+
         // Enter key to submit passcode
         document.addEventListener('DOMContentLoaded', () => {
             const passcodeInput = document.getElementById('passcode-input');
@@ -3016,12 +3225,26 @@ I'd like them to have a simple dashboard to view available deliveries and update
                     }
                 });
             }
+
+            // Add enter key listener for login
+            const loginInput = document.getElementById('login-input');
+            if (loginInput) {
+                loginInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        submitLogin();
+                    }
+                });
+            }
+
+            // Check authentication
+            checkAuthentication();
         });
 
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
             // Don't navigate if modal is open
-            if (document.getElementById('passcode-modal').classList.contains('show')) {
+            if (document.getElementById('passcode-modal').classList.contains('show') ||
+                document.getElementById('login-modal').classList.contains('show')) {
                 return;
             }
             if (e.key === 'ArrowRight') nextSlide();
@@ -3087,7 +3310,11 @@ I'd like them to have a simple dashboard to view available deliveries and update
         // Initialize
         loadTheme();
         loadSidebarState();
-        initSlides();
+        
+        // Only initialize slides if authenticated
+        if (isAuthenticated) {
+            initSlides();
+        }
 
         // Start countdown
         updateCountdown();
@@ -3145,24 +3372,28 @@ I'd like them to have a simple dashboard to view available deliveries and update
         <ul class="help-contact-list">
             <li>
                 <a href="slack://user?team=E06JHRE2D55&id=U03ABN16SA3" class="help-contact-item" target="_blank">
+                    <span class="online-dot"></span>
                     <span class="help-contact-name">Jino Jose</span>
                     <span class="help-contact-handle">@jino.jose</span>
                 </a>
             </li>
             <li>
                 <a href="slack://user?team=E06JHRE2D55&id=U03H597J5ED" class="help-contact-item" target="_blank">
+                    <span class="online-dot"></span>
                     <span class="help-contact-name">Jason Lei</span>
                     <span class="help-contact-handle">@jianan.lei</span>
                 </a>
             </li>
             <li>
                 <a href="slack://user?team=E06JHRE2D55&id=U077X25BA6M" class="help-contact-item" target="_blank">
+                    <span class="online-dot"></span>
                     <span class="help-contact-name">Walter Pak Wai Cheng</span>
                     <span class="help-contact-handle">@walterpakwai.cheng</span>
                 </a>
             </li>
             <li>
                 <a href="slack://user?team=E06JHRE2D55&id=U043H4MJJ21" class="help-contact-item" target="_blank">
+                    <span class="online-dot"></span>
                     <span class="help-contact-name">Ralph Manna</span>
                     <span class="help-contact-handle">@ralph.a.manna</span>
                 </a>
