@@ -386,6 +386,34 @@
             height: 16px;
         }
 
+        .logout-btn {
+            background: rgba(239, 68, 68, 0.25);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: white;
+            padding: 0.45rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+
+        .logout-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
         .progress-steps {
             display: flex;
             gap: 0.5rem;
@@ -2160,6 +2188,12 @@
                             <span class="timer-label">Time Remaining:</span>
                             <span class="timer-value" id="timer-value">Loading...</span>
                         </div>
+                        <button class="logout-btn" onclick="logout()">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                            <span>Logout</span>
+                        </button>
                     </div>
                 </div>
                 <div class="progress-steps" id="progress-steps"></div>
@@ -2581,10 +2615,9 @@ I'd like them to have a simple dashboard to view available deliveries and update
                         { number: '100%', label: 'Local & Testable' }
                     ],
                     whatsNext: [
-                        'Share with the community',
-                        'Explore advanced features',
-                        'Build your next project with Claude',
-                        'Try adding real-time order updates'
+                        'Share Screenshots of your Beautiful Food Delivery App in the Slack Channel',
+                        'Explore <a href="https://rakutenrewards.atlassian.net/wiki/spaces/E2/folder/43493459001?atlOrigin=eyJpIjoiOGE5ZTU2YjhhOGE2NDU3Zjg1OTZjNzAyMzIxZGU5MzciLCJwIjoiYyJ9" target="_blank" style="color: white; text-decoration: underline;">Advanced Features</a> like Subagents, Agent Skills, MCP, Slash Commands, Hooks etc.',
+                        'Build your next project with Claude'
                     ]
                 }
             }
@@ -2793,7 +2826,11 @@ I'd like them to have a simple dashboard to view available deliveries and update
                     }
                 }
 
-                const lockIcon = (slide.phase === 2 && !phase2Unlocked) ? ' <span style="margin-left: auto; opacity: 0.6;">🔒</span>' : '';
+                const lockIcon = slide.phase === 2
+                    ? (phase2Unlocked
+                        ? ' <span style="margin-left: auto; opacity: 0.8;" title="Phase 2 Unlocked">🔓</span>'
+                        : ' <span style="margin-left: auto; opacity: 0.6;" title="Phase 2 Locked">🔒</span>')
+                    : '';
                 const lockedClass = (slide.phase === 2 && !phase2Unlocked) ? ' locked' : '';
 
                 sidebarHTML += `
@@ -3151,6 +3188,9 @@ I'd like them to have a simple dashboard to view available deliveries and update
                 hidePasscodeModal();
                 showToast('🎉 Phase 2 Unlocked!');
 
+                // Update sidebar to show unlocked icons
+                updateSidebarLockIcons();
+
                 // Navigate to the pending slide
                 if (pendingSlideIndex !== null) {
                     setTimeout(() => {
@@ -3169,6 +3209,37 @@ I'd like them to have a simple dashboard to view available deliveries and update
 
         function cancelPasscode() {
             hidePasscodeModal();
+        }
+
+        // Update sidebar lock icons when Phase 2 is unlocked
+        function updateSidebarLockIcons() {
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            sidebarItems.forEach((item, index) => {
+                const slide = slides[index];
+                if (slide && slide.phase === 2) {
+                    // Remove locked class
+                    item.classList.remove('locked');
+
+                    // Find and update the lock icon
+                    const lockSpan = item.querySelector('span[title="Phase 2 Locked"]');
+                    if (lockSpan) {
+                        lockSpan.innerHTML = '🔓';
+                        lockSpan.title = 'Phase 2 Unlocked';
+                        lockSpan.style.opacity = '0.8';
+                    }
+                }
+            });
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout? You will need to enter the access code again.')) {
+                sessionStorage.removeItem('workshopAuthenticated');
+                localStorage.removeItem('phase2Unlocked');
+                localStorage.removeItem('completedPrompts');
+                localStorage.removeItem('visitedSlides');
+                location.reload();
+            }
         }
 
         // Login Functions
