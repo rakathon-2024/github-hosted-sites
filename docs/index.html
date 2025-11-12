@@ -1179,11 +1179,13 @@
 
         /* Celebration Slide */
         .celebration-slide {
-            background: linear-gradient(135deg, #4c1d95 0%, var(--primary) 30%, var(--secondary) 60%, var(--accent) 100%);
+            background: linear-gradient(135deg, #0a2540 0%, #1e3a5f 20%, #2d4a6b 40%, #1a4d6b 60%, #0d5c7a 80%, #006d8e 100%);
             border-radius: 20px;
             padding: 2rem;
             border: none;
-            box-shadow: 0 20px 60px rgba(147, 51, 234, 0.4);
+            box-shadow: 0 20px 60px rgba(0, 109, 142, 0.5),
+                        0 0 80px rgba(100, 181, 246, 0.3),
+                        inset 0 0 100px rgba(255, 255, 255, 0.1);
             text-align: center;
             color: white;
             max-width: 900px;
@@ -1192,18 +1194,27 @@
             overflow: hidden;
         }
 
+        .celebration-slide::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.3)"/><circle cx="20" cy="20" r="1.5" fill="rgba(255,255,255,0.2)"/><circle cx="80" cy="30" r="1" fill="rgba(255,255,255,0.25)"/><circle cx="30" cy="80" r="1.5" fill="rgba(255,255,255,0.2)"/><circle cx="70" cy="70" r="1" fill="rgba(255,255,255,0.25)"/></svg>');
+            opacity: 0.4;
+            animation: subtleMove 30s linear infinite;
+        }
+
         .celebration-slide.halloween {
-            background: linear-gradient(135deg, #1a1a1a 0%, #4c1d95 25%, #ff6b1a 50%, #ff8c00 75%, #ffa500 100%);
-            box-shadow: 0 20px 60px rgba(255, 107, 26, 0.5),
-                        0 0 80px rgba(255, 140, 0, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 109, 142, 0.5),
+                        0 0 80px rgba(100, 181, 246, 0.3),
+                        inset 0 0 100px rgba(255, 255, 255, 0.1);
         }
 
         .celebration-slide.halloween::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><path d="M50 20 L60 40 L80 40 L65 55 L70 75 L50 60 L30 75 L35 55 L20 40 L40 40 Z" fill="rgba(255,193,7,0.1)"/></svg>');
-            opacity: 0.3;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.3)"/><circle cx="20" cy="20" r="1.5" fill="rgba(255,255,255,0.2)"/><circle cx="80" cy="30" r="1" fill="rgba(255,255,255,0.25)"/><circle cx="30" cy="80" r="1.5" fill="rgba(255,255,255,0.2)"/><circle cx="70" cy="70" r="1" fill="rgba(255,255,255,0.25)"/></svg>');
+            opacity: 0.4;
             animation: subtleMove 30s linear infinite;
         }
 
@@ -1268,8 +1279,9 @@
         }
 
         .celebration-slide.halloween .whats-next {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 140, 0, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
         }
 
         .whats-next h3 {
@@ -1305,11 +1317,12 @@
             animation: bounce 2s ease-in-out infinite;
             position: relative;
             z-index: 1;
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.5));
         }
 
         .celebration-slide.halloween .celebration-emoji {
             font-size: 4rem;
-            filter: drop-shadow(0 0 20px rgba(255, 140, 0, 0.8));
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.6));
         }
 
         .halloween-decor {
@@ -1331,6 +1344,29 @@
         .halloween-decor:nth-child(4) { bottom: 25%; right: 5%; animation-delay: 1.5s; }
         .halloween-decor:nth-child(5) { top: 40%; left: 2%; animation-delay: 2s; }
         .halloween-decor:nth-child(6) { top: 50%; right: 3%; animation-delay: 2.5s; }
+
+        /* Snowflake Animation */
+        .snowflake {
+            position: absolute;
+            top: -20px;
+            font-size: 1.2rem;
+            opacity: 0.7;
+            animation: snowfall linear forwards;
+            pointer-events: none;
+            z-index: 1;
+            user-select: none;
+        }
+
+        @keyframes snowfall {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(30vh) translateX(var(--drift, 50px)) rotate(360deg);
+                opacity: 0;
+            }
+        }
 
         /* Setup Slide */
         .setup-slide {
@@ -2490,8 +2526,8 @@ Reference images from unsplash as hyperlink for cuisine images.`,
                 type: 'celebration',
                 phase: 1,
                 content: {
-                    emoji: '🎃',
-                    decorEmojis: ['👻', '🦇', '🕷️', '🍬'],
+                    emoji: '☃️',
+                    decorEmojis: ['🎄', '🎁', '⭐', '❄️'],
                     title: 'Phase 1 Complete!',
                     subtitle: 'You\'ve built a Restaurant Discovery App with Claude Code',
                     stats: [
@@ -2634,11 +2670,11 @@ I'd like them to have a simple dashboard to view available deliveries and update
                 phase: 2,
                 isFinal: true,
                 content: {
-                    emoji: '🎃',
-                    decorEmojis: ['👻', '🦇', '🕷️', '🍬', '🌙', '⭐'],
+                    emoji: '☃️',
+                    decorEmojis: ['🎄', '🎁', '⭐', '❄️', '🎅', '🔔'],
                     title: 'Congratulations!',
                     subtitle: 'You\'ve built a complete Food Delivery App with Claude Code',
-                    halloweenWish: '🎃 Happy Halloween! Keep coding spooky-good apps! 👻',
+                    halloweenWish: '☃️ Happy Holidays! Keep coding cool apps! ❄️',
                     stats: [
                         { number: '10', label: 'Prompts' },
                         { number: '3', label: 'User Types' },
@@ -2739,6 +2775,11 @@ I'd like them to have a simple dashboard to view available deliveries and update
                             ${buttonHTML}
                         </div>
                     `;
+                    
+                    // Start snowing effect for celebration slides
+                    setTimeout(() => {
+                        startSnowing();
+                    }, 300);
                 } else if (slide.type === 'phase-intro') {
                     contentDiv.innerHTML = `
                         <div class="setup-slide">
@@ -2853,7 +2894,7 @@ I'd like them to have a simple dashboard to view available deliveries and update
                         itemClass += ' completed';
                     }
                     if (slide.optional) {
-                        itemTitle += ' <span style="font-size: 0.85rem; margin-left: 0.5rem;">🎃</span>';
+                        itemTitle += ' <span style="font-size: 0.85rem; margin-left: 0.5rem;">☃️</span>';
                     }
                 }
 
@@ -2960,10 +3001,82 @@ I'd like them to have a simple dashboard to view available deliveries and update
 
             updateProgress();
 
+            // Handle snowing effect
+            if (currentSlide.type === 'celebration') {
+                // Start snowing for celebration slides
+                setTimeout(() => {
+                    startSnowing();
+                }, 400);
+            } else {
+                // Stop snowing if leaving celebration slide
+                stopSnowing();
+            }
+
             // Delay attention indicators for smoother UX
             setTimeout(() => {
                 updateAttentionIndicators();
             }, 600);
+        }
+
+        // Snowing effect functions
+        let snowInterval = null;
+        let snowflakes = [];
+
+        function startSnowing() {
+            // Stop any existing snowing
+            stopSnowing();
+            
+            const celebrationSlide = document.querySelector('.celebration-slide');
+            if (!celebrationSlide) return;
+
+            // Create snowflakes periodically
+            snowInterval = setInterval(() => {
+                createSnowflake(celebrationSlide);
+            }, 300); // Create a new snowflake every 300ms
+        }
+
+        function createSnowflake(container) {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.textContent = '❄️';
+            
+            // Random starting position
+            const startX = Math.random() * 100;
+            snowflake.style.left = startX + '%';
+            
+            // Random animation duration (3-8 seconds)
+            const duration = 3 + Math.random() * 5;
+            snowflake.style.animationDuration = duration + 's';
+            
+            // Random horizontal drift
+            const drift = (Math.random() - 0.5) * 100;
+            snowflake.style.setProperty('--drift', drift + 'px');
+            
+            container.appendChild(snowflake);
+            snowflakes.push(snowflake);
+            
+            // Remove snowflake after animation completes
+            setTimeout(() => {
+                if (snowflake.parentNode) {
+                    snowflake.parentNode.removeChild(snowflake);
+                }
+                snowflakes = snowflakes.filter(s => s !== snowflake);
+            }, duration * 1000);
+        }
+
+        function stopSnowing() {
+            if (snowInterval) {
+                clearInterval(snowInterval);
+                snowInterval = null;
+            }
+            
+            // Remove all existing snowflakes
+            snowflakes.forEach(snowflake => {
+                if (snowflake.parentNode) {
+                    snowflake.parentNode.removeChild(snowflake);
+                }
+            });
+            snowflakes = [];
         }
 
         function nextSlide() {
